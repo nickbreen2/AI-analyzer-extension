@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Spirit.AI Icon Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .icon-preview {
+      display: inline-block;
+      margin: 10px;
+      text-align: center;
+    }
+    canvas {
+      border: 1px solid #ddd;
+      background: white;
+    }
+    .instructions {
+      margin: 20px 0;
+      padding: 15px;
+      background: white;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Spirit.AI Icon Generator</h1>
+  <div class="instructions">
+    <p><strong>Instructions:</strong></p>
+    <ol>
+      <li>Right-click each icon below</li>
+      <li>Select "Save image as..." or "Copy image"</li>
+      <li>Save with the correct filename (icon16.png, icon32.png, etc.)</li>
+      <li>Place all icons in the Spirit.AI/icons/ directory</li>
+    </ol>
+  </div>
+  
+  <div id="icons"></div>
+
+  <script>
+    const sizes = [16, 32, 48, 128];
+    const container = document.getElementById('icons');
+
+    sizes.forEach(size => {
+      const div = document.createElement('div');
+      div.className = 'icon-preview';
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      
+      // Draw a simple ghost icon (circle with eyes)
+      ctx.fillStyle = '#3b82f6';
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size * 0.4, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Eyes
+      ctx.fillStyle = '#ffffff';
+      const eyeSize = size * 0.1;
+      ctx.beginPath();
+      ctx.arc(size * 0.35, size * 0.4, eyeSize, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(size * 0.65, size * 0.4, eyeSize, 0, Math.PI * 2);
+      ctx.fill();
+      
+      const label = document.createElement('div');
+      label.textContent = `icon${size}.png (${size}x${size})`;
+      label.style.marginTop = '5px';
+      label.style.fontSize = '12px';
+      
+      div.appendChild(canvas);
+      div.appendChild(label);
+      container.appendChild(div);
+    });
+  </script>
+</body>
+</html>
+

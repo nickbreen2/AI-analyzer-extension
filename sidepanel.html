@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spirit.AI</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <img src="icons/Brand Logo.svg" alt="Spirit.AI" class="logo">
+      <h1>Spirit.AI</h1>
+    </header>
+    
+    <div class="error-banner" id="errorBanner" style="display: none;">
+      <span id="errorMessage"></span>
+      <button class="error-close" id="errorClose">&times;</button>
+    </div>
+    
+    <div class="messages-container" id="messagesContainer">
+      <div class="welcome-message">
+        <p>Ask me anything about the current page!</p>
+      </div>
+    </div>
+    
+    <div class="loading-indicator" id="loadingIndicator" style="display: none;">
+      <div class="loading-spinner"></div>
+      <span class="loading-text">Spirit.AI is thinking...</span>
+      <div class="loading-progress" id="loadingProgress" style="display: none;">
+        Taking longer than expected...
+      </div>
+    </div>
+    
+    <div class="input-container">
+      <textarea 
+        id="messageInput" 
+        placeholder="Ask a question about this page..."
+        rows="1"
+      ></textarea>
+      <button id="sendButton" class="send-button" disabled>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+  </div>
+  
+  <script src="sidepanel.js"></script>
+</body>
+</html>
+

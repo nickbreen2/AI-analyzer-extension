@@ -1,0 +1,33 @@
+# Environment variables (contains API keys)
+.env
+.env.local
+.env.*.local
+
+# Node modules
+node_modules/
+backend/node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build outputs (if any)
+dist/
+build/
+
+# Package lock files (optional - some prefer to commit these)
+# package-lock.json
+
