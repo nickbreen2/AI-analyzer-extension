@@ -1,6 +1,6 @@
-# Spirit.AI - Chrome Extension
+# AI-analyzer - Chrome Extension
 
-A Chrome Manifest V3 browser extension that provides a persistent, right-side panel AI chat experience. Spirit.AI analyzes the currently active webpage by extracting page context and answering user questions using OpenAI GPT-4.
+A Chrome Manifest V3 browser extension that provides a persistent, right-side panel AI chat experience. AI-analyzer analyzes the currently active webpage by extracting page context and answering user questions using OpenAI GPT-4.
 
 ## Features
 
@@ -23,7 +23,7 @@ A Chrome Manifest V3 browser extension that provides a persistent, right-side pa
 1. Open Chrome/Edge and navigate to `chrome://extensions/` (or `edge://extensions/`)
 2. Enable "Developer mode" (toggle in top-right corner)
 3. Click "Load unpacked"
-4. Select the `Spirit.AI` directory (the folder containing `manifest.json`)
+4. Select the `AI-analyzer` directory (the folder containing `manifest.json`)
 5. The extension should now appear in your extensions list
 
 ### Step 2: Set Up the Backend Server
@@ -70,13 +70,13 @@ A Chrome Manifest V3 browser extension that provides a persistent, right-side pa
    - `icon48.png` (48x48 pixels)
    - `icon128.png` (128x128 pixels)
 
-   You can use the `create-placeholder-icons.html` file in the icons directory to generate simple placeholder icons, or use your own Spirit.AI branding.
+   You can use the `create-placeholder-icons.html` file in the icons directory to generate simple placeholder icons, or use your own AI-analyzer branding.
 
 ### Step 4: Verify Installation
 
 1. Make sure the backend server is running
 2. Navigate to any webpage (e.g., a news article or blog post)
-3. Click the Spirit.AI icon in your browser toolbar
+3. Click the AI-analyzer icon in your browser toolbar
 4. The side panel should open on the right
 5. Try asking a question like "Summarize this page"
 
@@ -99,7 +99,7 @@ npm start  # or npm run dev for auto-reload
 
 ### Debugging
 
-- **Service Worker**: Go to `chrome://extensions/`, find Spirit.AI, click "service worker" link
+- **Service Worker**: Go to `chrome://extensions/`, find AI-analyzer, click "service worker" link
 - **Side Panel**: Right-click in the side panel → "Inspect"
 - **Content Script**: Open DevTools on the webpage, check Console tab
 - **Backend**: Check terminal output and `http://localhost:3001/health`
@@ -174,7 +174,7 @@ Test the extension on various websites:
 ## Project Structure
 
 ```
-Spirit.AI/
+AI-analyzer/
 ├── manifest.json              # Extension manifest
 ├── service_worker.js          # Background orchestrator
 ├── content.js                 # Page context extractor
