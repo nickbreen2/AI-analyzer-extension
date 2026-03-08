@@ -7,7 +7,7 @@ class SpiritAIPanel {
     this.loadingProgressTimeout = null;
     this.tabId = null;
     this.pendingPlan = null; // { steps, domain, originalQuestion }
-    this.selectedModel = 'gpt-4o';
+    this.selectedModel = 'MiniMax-Text-01';
     this.init();
   }
 
@@ -25,10 +25,16 @@ class SpiritAIPanel {
     this.modelDropdown = document.getElementById('modelDropdown');
     this.modelLabel = document.getElementById('modelLabel');
     this.modelLogo = document.getElementById('modelLogo');
+    this.pageIndicator        = document.getElementById('pageIndicator');
+    this.pageIndicatorFavicon = document.getElementById('pageIndicatorFavicon');
+    this.pageIndicatorTitle   = document.getElementById('pageIndicatorTitle');
+    this.suggestionChips      = document.getElementById('suggestionChips');
 
     // Capture the tab this panel belongs to
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     this.tabId = tab?.id ?? null;
+    if (tab) this.updatePageIndicator(tab);
+    if (tab) this.showSuggestions(tab);
 
     this.setupEventListeners();
     this.setupMessageListener();
@@ -121,6 +127,12 @@ class SpiritAIPanel {
         this.handleSpiritResponse(message);
       }
     });
+
+    // Update page indicator when the active tab navigates
+    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+      if (tabId !== this.tabId || changeInfo.status !== 'complete') return;
+      this.updatePageIndicator(tab);
+    });
   }
 
   updateSendButtonState() {
@@ -192,7 +204,7 @@ class SpiritAIPanel {
     // Header
     const header = document.createElement('div');
     header.className = 'plan-card-header';
-    header.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span>Spirit.AI's plan</span>`;
+    header.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span>BirdBot AI's plan</span>`;
 
     // Sites section
     const sites = document.createElement('div');
@@ -223,7 +235,7 @@ class SpiritAIPanel {
     // Footer
     const footer = document.createElement('p');
     footer.className = 'plan-card-footer';
-    footer.textContent = "Spirit.AI will only use the sites listed. You'll be asked before accessing anything else.";
+    footer.textContent = "BirdBot AI will only use the sites listed. You'll be asked before accessing anything else.";
 
     card.appendChild(header);
     card.appendChild(sites);
@@ -396,6 +408,105 @@ class SpiritAIPanel {
 
   formatTime(date) {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  updatePageIndicator(tab) {
+    if (!tab || !this.pageIndicator) return;
+    this.pageIndicator.classList.remove('loading');
+
+    this.pageIndicatorTitle.textContent = tab.title || tab.url || 'Unknown page';
+
+    const faviconEl = this.pageIndicatorFavicon;
+    faviconEl.classList.remove('loaded');
+    let src = '';
+    if (tab.favIconUrl && !tab.favIconUrl.startsWith('chrome://')) {
+      src = tab.favIconUrl;
+    } else if (tab.url) {
+      try { src = `https://www.google.com/s2/favicons?domain=${new URL(tab.url).hostname}&sz=32`; }
+      catch { /* no favicon */ }
+    }
+    if (src) {
+      faviconEl.onload  = () => faviconEl.classList.add('loaded');
+      faviconEl.onerror = () => faviconEl.classList.remove('loaded');
+      faviconEl.src = src;
+    }
+  }
+
+  showSuggestions(tab) {
+    if (!this.suggestionChips || !tab?.url) return;
+
+    const SUGGESTIONS = {
+      'github.com': [
+        'Summarize what this page is about',
+        'Explain the code on this page',
+        'What are the recent changes here?',
+      ],
+      'youtube.com': [
+        'Summarize this video for me',
+        'What are the key points in this video?',
+        'Give me the main takeaways',
+      ],
+      'youtu.be': [
+        'Summarize this video for me',
+        'What are the key points in this video?',
+      ],
+      'amazon.com': [
+        'Is this product worth buying?',
+        'Summarize the reviews',
+        'What are the pros and cons?',
+      ],
+      'amazon.co.uk': [
+        'Is this product worth buying?',
+        'Summarize the reviews',
+      ],
+      'reddit.com': [
+        'Summarize the top comments',
+        "What's the main discussion about?",
+      ],
+      'linkedin.com': [
+        'Summarize this profile',
+        'What does this job require?',
+      ],
+      'twitter.com': [
+        'Summarize this thread',
+        "What's this tweet about?",
+      ],
+      'x.com': [
+        'Summarize this thread',
+        "What's this tweet about?",
+      ],
+      'nytimes.com':     ['Summarize this article', 'What are the key facts?'],
+      'bbc.com':         ['Summarize this article', 'What are the key facts?'],
+      'bbc.co.uk':       ['Summarize this article', 'What are the key facts?'],
+      'cnn.com':         ['Summarize this article', 'What are the key facts?'],
+      'theguardian.com': ['Summarize this article', 'What are the key facts?'],
+      'reuters.com':     ['Summarize this article', 'What are the key facts?'],
+      'techcrunch.com':  ['Summarize this article', 'What are the main points?'],
+      'medium.com':      ['Summarize this article', 'What are the main points?'],
+      'substack.com':    ['Summarize this article', 'What are the main points?'],
+      'theverge.com':    ['Summarize this article', 'What are the main points?'],
+      'wired.com':       ['Summarize this article', 'What are the main points?'],
+    };
+
+    let hostname = '';
+    try { hostname = new URL(tab.url).hostname.replace('www.', ''); }
+    catch { return; }
+
+    const suggestions = SUGGESTIONS[hostname];
+    if (!suggestions?.length) return;
+
+    this.suggestionChips.innerHTML = '';
+    suggestions.forEach(text => {
+      const btn = document.createElement('button');
+      btn.className = 'suggestion-chip';
+      btn.textContent = text;
+      btn.addEventListener('click', () => {
+        this.messageInput.value = text;
+        this.updateSendButtonState();
+        this.handleSend();
+      });
+      this.suggestionChips.appendChild(btn);
+    });
   }
 }
 

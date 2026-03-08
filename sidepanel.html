@@ -3,36 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spirit.AI</title>
+  <title>BirdBot AI</title>
   <link rel="stylesheet" href="sidepanel.css">
 </head>
 <body>
   <div class="container">
     <header class="header">
-      <div class="model-selector" id="modelSelector">
-        <button class="model-selector-btn" id="modelSelectorBtn">
-          <img id="modelLogo" src="icons/ChatGPT_Logo_0.svg" alt="" class="model-logo">
-          <span id="modelLabel">GPT-4o</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </button>
-        <div class="model-dropdown" id="modelDropdown">
-          <button class="model-option active" data-model="gpt-4o" data-logo="icons/ChatGPT_Logo_0.svg">
-            <img src="icons/ChatGPT_Logo_0.svg" alt="" class="model-option-logo">
-            <div>
-              <span class="model-option-name">GPT-4o</span>
-              <span class="model-option-desc">Most capable</span>
-            </div>
-          </button>
-          <button class="model-option" data-model="gpt-4o-mini" data-logo="icons/ChatGPT_Logo_0.svg">
-            <img src="icons/ChatGPT_Logo_0.svg" alt="" class="model-option-logo">
-            <div>
-              <span class="model-option-name">GPT-4o mini</span>
-              <span class="model-option-desc">Faster & lighter</span>
-            </div>
-          </button>
-        </div>
+      <div class="page-indicator loading" id="pageIndicator">
+        <img class="page-indicator-favicon" id="pageIndicatorFavicon" src="" alt="" width="14" height="14">
+        <span class="page-indicator-title" id="pageIndicatorTitle"></span>
       </div>
       <div class="header-actions">
         <button id="clearChatButton" class="header-icon-btn" title="New chat">
@@ -58,7 +37,9 @@
     
     <div class="messages-container" id="messagesContainer">
       <div class="welcome-message">
-        <p>Ask me anything about the current page!</p>
+        <img src="icons/BirdBot.svg" alt="BirdBot" class="welcome-logo">
+        <p>Ask your BirdBot anything about this page</p>
+        <div class="suggestion-chips" id="suggestionChips"></div>
       </div>
     </div>
     
@@ -70,6 +51,67 @@
           rows="1"
         ></textarea>
         <div class="input-toolbar">
+          <div class="input-toolbar-left">
+          <div class="model-selector" id="modelSelector">
+            <button class="model-selector-btn" id="modelSelectorBtn">
+              <img id="modelLogo" src="icons/minimax-color.svg" alt="" class="model-logo">
+              <span id="modelLabel">MiniMax</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="model-dropdown" id="modelDropdown">
+              <button class="model-option" data-model="gpt-4o" data-logo="icons/ChatGPT_Logo_0.svg">
+                <img src="icons/ChatGPT_Logo_0.svg" alt="" class="model-option-logo">
+                <div>
+                  <span class="model-option-name">GPT-4o</span>
+                  <span class="model-option-desc">Most capable</span>
+                </div>
+              </button>
+              <button class="model-option" data-model="gpt-4o-mini" data-logo="icons/ChatGPT_Logo_0.svg">
+                <img src="icons/ChatGPT_Logo_0.svg" alt="" class="model-option-logo">
+                <div>
+                  <span class="model-option-name">GPT-4o mini</span>
+                  <span class="model-option-desc">Faster & lighter</span>
+                </div>
+              </button>
+              <button class="model-option" data-model="claude-sonnet-4-6" data-logo="icons/claude.svg">
+                <img src="icons/claude.svg" alt="" class="model-option-logo">
+                <div>
+                  <span class="model-option-name">Claude Sonnet</span>
+                  <span class="model-option-desc">Smart & efficient</span>
+                </div>
+              </button>
+              <button class="model-option" data-model="claude-haiku-4-5-20251001" data-logo="icons/claude.svg">
+                <img src="icons/claude.svg" alt="" class="model-option-logo">
+                <div>
+                  <span class="model-option-name">Claude Haiku</span>
+                  <span class="model-option-desc">Fastest Claude</span>
+                </div>
+              </button>
+              <button class="model-option" data-model="grok-3" data-logo="icons/grok.svg">
+                <img src="icons/grok.svg" alt="" class="model-option-logo">
+                <div>
+                  <span class="model-option-name">Grok 3</span>
+                  <span class="model-option-desc">xAI's most capable</span>
+                </div>
+              </button>
+              <button class="model-option" data-model="grok-3-mini" data-logo="icons/grok.svg">
+                <img src="icons/grok.svg" alt="" class="model-option-logo">
+                <div>
+                  <span class="model-option-name">Grok 3 Mini</span>
+                  <span class="model-option-desc">Fast & efficient</span>
+                </div>
+              </button>
+              <button class="model-option active" data-model="MiniMax-Text-01" data-logo="icons/minimax-color.svg">
+                <img src="icons/minimax-color.svg" alt="" class="model-option-logo">
+                <div>
+                  <span class="model-option-name">MiniMax</span>
+                  <span class="model-option-desc">1M context window</span>
+                </div>
+              </button>
+            </div>
+          </div>
           <button class="analyze-page-btn" id="analyzePageBtn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
@@ -79,6 +121,7 @@
             </svg>
             <span>Analyze page</span>
           </button>
+          </div>
           <button id="sendButton" class="send-button" disabled>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="12" y1="19" x2="12" y2="5"></line>

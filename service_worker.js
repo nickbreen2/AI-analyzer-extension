@@ -8,7 +8,7 @@ const CONFIG = {
   backendEndpoint: 'http://localhost:3001/api/chat',
   visionEndpoint: 'http://localhost:3001/api/chat/vision',
   classifyEndpoint: 'http://localhost:3001/api/classify',
-  defaultModel: 'gpt-4o',
+  defaultModel: 'MiniMax-Text-01',
   fallbackModel: 'gpt-4o-mini',
   requestTimeout: 30000, // 30 seconds
   progressWarningDelay: 10000, // 10 seconds
@@ -26,12 +26,12 @@ chrome.action.onClicked.addListener(async (tab) => {
 
   // Add the tab to a Spirit.AI tab group for visual clarity
   try {
-    const groups = await chrome.tabGroups.query({ windowId: tab.windowId, title: 'Spirit.AI' });
+    const groups = await chrome.tabGroups.query({ windowId: tab.windowId, title: 'BirdBot AI' });
     if (groups.length > 0) {
       await chrome.tabs.group({ tabIds: [tab.id], groupId: groups[0].id });
     } else {
       const groupId = await chrome.tabs.group({ tabIds: [tab.id] });
-      await chrome.tabGroups.update(groupId, { title: 'Spirit.AI', color: 'purple' });
+      await chrome.tabGroups.update(groupId, { title: 'BirdBot AI', color: 'purple' });
     }
   } catch (e) {
     console.warn('Spirit.AI: Tab grouping failed:', e);

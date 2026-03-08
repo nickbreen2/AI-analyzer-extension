@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import OpenAI from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
 
 // Load environment variables
 dotenv.config();
@@ -20,6 +21,21 @@ if (!process.env.OPENAI_API_KEY) {
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
+
+// Initialize Anthropic client (optional — only needed for Claude models)
+const anthropic = process.env.ANTHROPIC_API_KEY
+  ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  : null;
+
+// Initialize MiniMax client (OpenAI-compatible)
+const minimax = process.env.MINIMAX_API_KEY
+  ? new OpenAI({ apiKey: process.env.MINIMAX_API_KEY, baseURL: 'https://api.minimax.io/v1' })
+  : null;
+
+// Initialize xAI client (OpenAI-compatible)
+const xai = process.env.X_API_KEY
+  ? new OpenAI({ apiKey: process.env.X_API_KEY, baseURL: 'https://api.x.ai/v1' })
+  : null;
 
 // Middleware
 app.use(cors({
@@ -143,18 +159,48 @@ app.post('/api/chat', async (req, res) => {
     // Determine model to use
     const modelToUse = model || process.env.DEFAULT_MODEL || 'gpt-4o-mini';
     const fallbackModel = process.env.FALLBACK_MODEL || 'gpt-3.5-turbo';
+    const isClaude = modelToUse.startsWith('claude-');
+    const isMiniMax = modelToUse.startsWith('MiniMax-') || modelToUse.startsWith('minimax-');
+    const isGrok = modelToUse.startsWith('grok-');
 
     // Format prompts
     const userPrompt = formatUserPrompt(question, pageContext);
     console.log('User prompt length:', userPrompt.length);
 
-    let response;
-    let modelUsed = modelToUse;
+    let answer, highlights, usage, modelUsed = modelToUse;
 
-    try {
-      console.log('📞 About to call OpenAI with model:', modelToUse);
-      // Attempt to call OpenAI with primary model
-      response = await openai.chat.completions.create({
+    if (isMiniMax) {
+      if (!minimax) {
+        return res.status(500).json({ error: 'MiniMax API key not configured.' });
+      }
+      console.log('📞 About to call MiniMax with model:', modelToUse);
+      const mmResponse = await minimax.chat.completions.create({
+        model: modelToUse,
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 2000
+      });
+      console.log('✅ MiniMax response received');
+      const rawContent = mmResponse.choices[0]?.message?.content || '{}';
+      let parsed;
+      try { parsed = JSON.parse(rawContent); }
+      catch { parsed = { answer: rawContent, highlights: [] }; }
+      answer = parsed.answer || 'I apologize, but I couldn\'t generate a response.';
+      highlights = Array.isArray(parsed.highlights) ? parsed.highlights : [];
+      usage = {
+        prompt_tokens: mmResponse.usage?.prompt_tokens || 0,
+        completion_tokens: mmResponse.usage?.completion_tokens || 0,
+        total_tokens: mmResponse.usage?.total_tokens || 0
+      };
+    } else if (isGrok) {
+      if (!xai) {
+        return res.status(500).json({ error: 'xAI API key not configured.' });
+      }
+      console.log('📞 About to call xAI with model:', modelToUse);
+      const grokResponse = await xai.chat.completions.create({
         model: modelToUse,
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
@@ -164,17 +210,47 @@ app.post('/api/chat', async (req, res) => {
         temperature: 0.7,
         max_tokens: 2000
       });
-      console.log('✅ OpenAI response received');
-      console.log('Response length:', response.choices[0]?.message?.content?.length || 0);
-    } catch (modelError) {
-      console.error('Error calling OpenAI:', modelError);
-      // If primary model fails, try fallback
-      if (modelError.status === 404 || modelError.code === 'model_not_found') {
-        console.warn(`Model ${modelToUse} not available, falling back to ${fallbackModel}`);
-        modelUsed = fallbackModel;
-
+      console.log('✅ xAI response received');
+      const rawContent = grokResponse.choices[0]?.message?.content || '{}';
+      let parsed;
+      try { parsed = JSON.parse(rawContent); }
+      catch { parsed = { answer: rawContent, highlights: [] }; }
+      answer = parsed.answer || 'I apologize, but I couldn\'t generate a response.';
+      highlights = Array.isArray(parsed.highlights) ? parsed.highlights : [];
+      usage = {
+        prompt_tokens: grokResponse.usage?.prompt_tokens || 0,
+        completion_tokens: grokResponse.usage?.completion_tokens || 0,
+        total_tokens: grokResponse.usage?.total_tokens || 0
+      };
+    } else if (isClaude) {
+      if (!anthropic) {
+        return res.status(500).json({ error: 'Anthropic API key not configured.' });
+      }
+      console.log('📞 About to call Anthropic with model:', modelToUse);
+      const claudeResponse = await anthropic.messages.create({
+        model: modelToUse,
+        max_tokens: 2000,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: userPrompt }]
+      });
+      console.log('✅ Anthropic response received');
+      const rawContent = claudeResponse.content[0]?.text || '{}';
+      let parsed;
+      try { parsed = JSON.parse(rawContent); }
+      catch { parsed = { answer: rawContent, highlights: [] }; }
+      answer = parsed.answer || 'I apologize, but I couldn\'t generate a response.';
+      highlights = Array.isArray(parsed.highlights) ? parsed.highlights : [];
+      usage = {
+        prompt_tokens: claudeResponse.usage?.input_tokens || 0,
+        completion_tokens: claudeResponse.usage?.output_tokens || 0,
+        total_tokens: (claudeResponse.usage?.input_tokens || 0) + (claudeResponse.usage?.output_tokens || 0)
+      };
+    } else {
+      let response;
+      try {
+        console.log('📞 About to call OpenAI with model:', modelToUse);
         response = await openai.chat.completions.create({
-          model: fallbackModel,
+          model: modelToUse,
           messages: [
             { role: 'system', content: SYSTEM_PROMPT },
             { role: 'user', content: userPrompt }
@@ -183,32 +259,46 @@ app.post('/api/chat', async (req, res) => {
           temperature: 0.7,
           max_tokens: 2000
         });
-      } else {
-        throw modelError;
+        console.log('✅ OpenAI response received');
+      } catch (modelError) {
+        console.error('Error calling OpenAI:', modelError);
+        if (modelError.status === 404 || modelError.code === 'model_not_found') {
+          console.warn(`Model ${modelToUse} not available, falling back to ${fallbackModel}`);
+          modelUsed = fallbackModel;
+          response = await openai.chat.completions.create({
+            model: fallbackModel,
+            messages: [
+              { role: 'system', content: SYSTEM_PROMPT },
+              { role: 'user', content: userPrompt }
+            ],
+            response_format: { type: 'json_object' },
+            temperature: 0.7,
+            max_tokens: 2000
+          });
+        } else {
+          throw modelError;
+        }
       }
+      const rawContent = response.choices[0]?.message?.content || '{}';
+      let parsed;
+      try { parsed = JSON.parse(rawContent); }
+      catch { parsed = { answer: rawContent, highlights: [] }; }
+      answer = parsed.answer || 'I apologize, but I couldn\'t generate a response.';
+      highlights = Array.isArray(parsed.highlights) ? parsed.highlights : [];
+      usage = {
+        prompt_tokens: response.usage?.prompt_tokens || 0,
+        completion_tokens: response.usage?.completion_tokens || 0,
+        total_tokens: response.usage?.total_tokens || 0
+      };
     }
 
-    // Parse structured JSON response
-    const rawContent = response.choices[0]?.message?.content || '{}';
-    let parsed;
-    try {
-      parsed = JSON.parse(rawContent);
-    } catch {
-      parsed = { answer: rawContent, highlights: [] };
-    }
-    const answer = parsed.answer || 'I apologize, but I couldn\'t generate a response.';
-    const highlights = Array.isArray(parsed.highlights) ? parsed.highlights : [];
     console.log('📤 Sending response back to client');
 
     // Return response
     res.json({
       answer,
       highlights,
-      usage: {
-        prompt_tokens: response.usage?.prompt_tokens || 0,
-        completion_tokens: response.usage?.completion_tokens || 0,
-        total_tokens: response.usage?.total_tokens || 0
-      },
+      usage,
       model: modelUsed
     });
     console.log('✅ Response sent successfully');
