@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import OpenAI from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
 
 // Load environment variables
 dotenv.config();
@@ -21,6 +22,21 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
+// Initialize Anthropic client (optional — only needed for Claude models)
+const anthropic = process.env.ANTHROPIC_API_KEY
+  ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  : null;
+
+// Initialize MiniMax client (OpenAI-compatible)
+const minimax = process.env.MINIMAX_API_KEY
+  ? new OpenAI({ apiKey: process.env.MINIMAX_API_KEY, baseURL: 'https://api.minimax.io/v1' })
+  : null;
+
+// Initialize xAI client (OpenAI-compatible)
+const xai = process.env.X_API_KEY
+  ? new OpenAI({ apiKey: process.env.X_API_KEY, baseURL: 'https://api.x.ai/v1' })
+  : null;
+
 // Middleware
 app.use(cors({
   origin: '*', // In production, restrict to extension origin
@@ -32,7 +48,12 @@ app.use(express.json({ limit: '10mb' }));
 const SYSTEM_PROMPT = `You are Spirit.AI, a browser-based assistant.
 Answer the user's question using only the provided webpage content (title, URL, and extracted text).
 If the webpage content does not contain the answer, say so explicitly.
-Be concise and accurate. Do not invent details.`;
+Be concise and accurate. Do not invent details.
+
+Respond with valid JSON in this exact format:
+{"answer": "your answer here", "highlights": ["phrase 1", "phrase 2"]}
+
+The "highlights" array must contain 2-5 short words or phrases from the page content that you are directly referencing in your answer. Use an empty array if you are not referencing specific content.`;
 
 /**
  * Formats the user prompt with page context and question
@@ -46,6 +67,60 @@ ${pageContext.text}
 
 User Question: ${question}`;
 }
+
+// System prompt for classifying questions
+const CLASSIFY_PROMPT = `You are Spirit.AI, a browser assistant.
+Given a user question and webpage context, decide if answering requires multiple sequential actions (like summarizing AND finding related links, extracting multiple things, comparing items) or if it is a simple direct question.
+
+Respond with valid JSON only:
+{"type": "plan", "steps": ["Step 1: ...", "Step 2: ...", "Step 3: ..."]} for multi-step action requests
+{"type": "direct"} for simple questions
+
+Multi-step examples: "summarize and find related links", "find all prices and compare them", "extract the main points and suggest follow-up reading", "list all authors and their topics"
+Direct examples: "what is this page about?", "who wrote this?", "what is the main topic?", "translate this paragraph", "what does X mean?"
+
+Keep steps short and action-oriented (under 10 words each). Return 2-4 steps maximum.`;
+
+/**
+ * POST /api/classify
+ * Classifies whether a request needs a plan or a direct answer
+ */
+app.post('/api/classify', async (req, res) => {
+  const { question, pageContext } = req.body;
+
+  if (!question || !pageContext) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  const modelToUse = 'gpt-4o-mini'; // Always use fast model for classification
+  const userPrompt = `Page Title: ${pageContext.title}\nPage URL: ${pageContext.url}\n\nUser Question: ${question}`;
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: modelToUse,
+      messages: [
+        { role: 'system', content: CLASSIFY_PROMPT },
+        { role: 'user', content: userPrompt }
+      ],
+      response_format: { type: 'json_object' },
+      temperature: 0.2,
+      max_tokens: 300
+    });
+
+    const rawContent = response.choices[0]?.message?.content || '{}';
+    let parsed;
+    try {
+      parsed = JSON.parse(rawContent);
+    } catch {
+      parsed = { type: 'direct' };
+    }
+
+    res.json(parsed);
+  } catch (error) {
+    console.error('Classification error (defaulting to direct):', error.message);
+    res.json({ type: 'direct' });
+  }
+});
 
 /**
  * POST /api/chat
@@ -84,18 +159,22 @@ app.post('/api/chat', async (req, res) => {
     // Determine model to use
     const modelToUse = model || process.env.DEFAULT_MODEL || 'gpt-4o-mini';
     const fallbackModel = process.env.FALLBACK_MODEL || 'gpt-3.5-turbo';
+    const isClaude = modelToUse.startsWith('claude-');
+    const isMiniMax = modelToUse.startsWith('MiniMax-') || modelToUse.startsWith('minimax-');
+    const isGrok = modelToUse.startsWith('grok-');
 
     // Format prompts
     const userPrompt = formatUserPrompt(question, pageContext);
     console.log('User prompt length:', userPrompt.length);
 
-    let response;
-    let modelUsed = modelToUse;
+    let answer, highlights, usage, modelUsed = modelToUse;
 
-    try {
-      console.log('📞 About to call OpenAI with model:', modelToUse);
-      // Attempt to call OpenAI with primary model
-      response = await openai.chat.completions.create({
+    if (isMiniMax) {
+      if (!minimax) {
+        return res.status(500).json({ error: 'MiniMax API key not configured.' });
+      }
+      console.log('📞 About to call MiniMax with model:', modelToUse);
+      const mmResponse = await minimax.chat.completions.create({
         model: modelToUse,
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
@@ -104,42 +183,122 @@ app.post('/api/chat', async (req, res) => {
         temperature: 0.7,
         max_tokens: 2000
       });
-      console.log('✅ OpenAI response received');
-      console.log('Response length:', response.choices[0]?.message?.content?.length || 0);
-    } catch (modelError) {
-      console.error('Error calling OpenAI:', modelError);
-      // If primary model fails, try fallback
-      if (modelError.status === 404 || modelError.code === 'model_not_found') {
-        console.warn(`Model ${modelToUse} not available, falling back to ${fallbackModel}`);
-        modelUsed = fallbackModel;
-        
+      console.log('✅ MiniMax response received');
+      const rawContent = mmResponse.choices[0]?.message?.content || '{}';
+      let parsed;
+      try { parsed = JSON.parse(rawContent); }
+      catch { parsed = { answer: rawContent, highlights: [] }; }
+      answer = parsed.answer || 'I apologize, but I couldn\'t generate a response.';
+      highlights = Array.isArray(parsed.highlights) ? parsed.highlights : [];
+      usage = {
+        prompt_tokens: mmResponse.usage?.prompt_tokens || 0,
+        completion_tokens: mmResponse.usage?.completion_tokens || 0,
+        total_tokens: mmResponse.usage?.total_tokens || 0
+      };
+    } else if (isGrok) {
+      if (!xai) {
+        return res.status(500).json({ error: 'xAI API key not configured.' });
+      }
+      console.log('📞 About to call xAI with model:', modelToUse);
+      const grokResponse = await xai.chat.completions.create({
+        model: modelToUse,
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: userPrompt }
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.7,
+        max_tokens: 2000
+      });
+      console.log('✅ xAI response received');
+      const rawContent = grokResponse.choices[0]?.message?.content || '{}';
+      let parsed;
+      try { parsed = JSON.parse(rawContent); }
+      catch { parsed = { answer: rawContent, highlights: [] }; }
+      answer = parsed.answer || 'I apologize, but I couldn\'t generate a response.';
+      highlights = Array.isArray(parsed.highlights) ? parsed.highlights : [];
+      usage = {
+        prompt_tokens: grokResponse.usage?.prompt_tokens || 0,
+        completion_tokens: grokResponse.usage?.completion_tokens || 0,
+        total_tokens: grokResponse.usage?.total_tokens || 0
+      };
+    } else if (isClaude) {
+      if (!anthropic) {
+        return res.status(500).json({ error: 'Anthropic API key not configured.' });
+      }
+      console.log('📞 About to call Anthropic with model:', modelToUse);
+      const claudeResponse = await anthropic.messages.create({
+        model: modelToUse,
+        max_tokens: 2000,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: userPrompt }]
+      });
+      console.log('✅ Anthropic response received');
+      const rawContent = claudeResponse.content[0]?.text || '{}';
+      let parsed;
+      try { parsed = JSON.parse(rawContent); }
+      catch { parsed = { answer: rawContent, highlights: [] }; }
+      answer = parsed.answer || 'I apologize, but I couldn\'t generate a response.';
+      highlights = Array.isArray(parsed.highlights) ? parsed.highlights : [];
+      usage = {
+        prompt_tokens: claudeResponse.usage?.input_tokens || 0,
+        completion_tokens: claudeResponse.usage?.output_tokens || 0,
+        total_tokens: (claudeResponse.usage?.input_tokens || 0) + (claudeResponse.usage?.output_tokens || 0)
+      };
+    } else {
+      let response;
+      try {
+        console.log('📞 About to call OpenAI with model:', modelToUse);
         response = await openai.chat.completions.create({
-          model: fallbackModel,
+          model: modelToUse,
           messages: [
             { role: 'system', content: SYSTEM_PROMPT },
             { role: 'user', content: userPrompt }
           ],
+          response_format: { type: 'json_object' },
           temperature: 0.7,
           max_tokens: 2000
         });
-      } else {
-        throw modelError;
+        console.log('✅ OpenAI response received');
+      } catch (modelError) {
+        console.error('Error calling OpenAI:', modelError);
+        if (modelError.status === 404 || modelError.code === 'model_not_found') {
+          console.warn(`Model ${modelToUse} not available, falling back to ${fallbackModel}`);
+          modelUsed = fallbackModel;
+          response = await openai.chat.completions.create({
+            model: fallbackModel,
+            messages: [
+              { role: 'system', content: SYSTEM_PROMPT },
+              { role: 'user', content: userPrompt }
+            ],
+            response_format: { type: 'json_object' },
+            temperature: 0.7,
+            max_tokens: 2000
+          });
+        } else {
+          throw modelError;
+        }
       }
+      const rawContent = response.choices[0]?.message?.content || '{}';
+      let parsed;
+      try { parsed = JSON.parse(rawContent); }
+      catch { parsed = { answer: rawContent, highlights: [] }; }
+      answer = parsed.answer || 'I apologize, but I couldn\'t generate a response.';
+      highlights = Array.isArray(parsed.highlights) ? parsed.highlights : [];
+      usage = {
+        prompt_tokens: response.usage?.prompt_tokens || 0,
+        completion_tokens: response.usage?.completion_tokens || 0,
+        total_tokens: response.usage?.total_tokens || 0
+      };
     }
 
-    // Extract response
-    const answer = response.choices[0]?.message?.content || 'I apologize, but I couldn\'t generate a response.';
     console.log('📤 Sending response back to client');
-    console.log('Answer length:', answer.length);
 
     // Return response
     res.json({
       answer,
-      usage: {
-        prompt_tokens: response.usage?.prompt_tokens || 0,
-        completion_tokens: response.usage?.completion_tokens || 0,
-        total_tokens: response.usage?.total_tokens || 0
-      },
+      highlights,
+      usage,
       model: modelUsed
     });
     console.log('✅ Response sent successfully');
@@ -204,7 +363,12 @@ app.post('/api/chat/vision', async (req, res) => {
     const systemPrompt = `You are Spirit.AI, a browser-based assistant.
 You are given a screenshot of a webpage. Answer the user's question based on what you can see in the screenshot.
 If the screenshot does not contain the answer, say so explicitly.
-Be concise and accurate. Do not invent details.`;
+Be concise and accurate. Do not invent details.
+
+Respond with valid JSON in this exact format:
+{"answer": "your answer here", "highlights": ["phrase 1", "phrase 2"]}
+
+The "highlights" array must contain 2-5 short words or phrases visible in the screenshot that you are directly referencing in your answer. Use an empty array if you are not referencing specific content.`;
 
     const response = await openai.chat.completions.create({
       model: modelToUse,
@@ -224,15 +388,26 @@ Be concise and accurate. Do not invent details.`;
           ]
         }
       ],
+      response_format: { type: 'json_object' },
       temperature: 0.7,
       max_tokens: 2000
     });
 
-    const answer = response.choices[0]?.message?.content || 'I apologize, but I couldn\'t generate a response.';
+    // Parse structured JSON response
+    const rawContent = response.choices[0]?.message?.content || '{}';
+    let parsed;
+    try {
+      parsed = JSON.parse(rawContent);
+    } catch {
+      parsed = { answer: rawContent, highlights: [] };
+    }
+    const answer = parsed.answer || 'I apologize, but I couldn\'t generate a response.';
+    const highlights = Array.isArray(parsed.highlights) ? parsed.highlights : [];
     console.log('✅ Vision response sent');
 
     res.json({
       answer,
+      highlights,
       usage: {
         prompt_tokens: response.usage?.prompt_tokens || 0,
         completion_tokens: response.usage?.completion_tokens || 0,
