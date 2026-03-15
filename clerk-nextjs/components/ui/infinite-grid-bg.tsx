@@ -65,31 +65,6 @@ export function InfiniteGridBg() {
         <GridPattern offsetX={gridOffsetX} offsetY={gridOffsetY} />
       </motion.div>
 
-      {/* Colour blobs */}
-      <div
-        style={{
-          position: 'absolute',
-          right: '-10%',
-          top: '-15%',
-          width: '35%',
-          height: '35%',
-          borderRadius: '50%',
-          background: 'rgba(99,102,241,0.18)',
-          filter: 'blur(100px)',
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          right: '20%',
-          bottom: '-10%',
-          width: '20%',
-          height: '20%',
-          borderRadius: '50%',
-          background: 'rgba(99,102,241,0.1)',
-          filter: 'blur(80px)',
-        }}
-      />
     </div>
   )
 }

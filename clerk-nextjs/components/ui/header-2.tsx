@@ -2,6 +2,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { GlowButton } from '@/components/ui/glow-button';
 import { cn } from '@/lib/utils';
@@ -10,12 +11,21 @@ import { MenuToggleIcon } from '@/components/ui/menu-toggle-icon';
 
 export function Header() {
   const [open, setOpen] = React.useState(false);
+  const pathname = usePathname();
 
   const links = [
-    { label: 'How to set up', href: '/how-to-set-up' },
-    { label: 'FAQ', href: '/faq' },
+    { label: 'How to set up', href: '/auth-bridge' },
+    { label: 'FAQ', href: '/#faq', scrollTo: 'faq' },
     { label: 'Pricing', href: '/pricing' },
   ];
+
+  function handleNavClick(e: React.MouseEvent<HTMLAnchorElement>, scrollTo?: string) {
+    if (!scrollTo) return;
+    const el = document.getElementById(scrollTo);
+    if (!el) return;
+    e.preventDefault();
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
   React.useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
@@ -24,7 +34,7 @@ export function Header() {
 
   return (
     <header className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
-      <nav className="relative flex h-14 w-full max-w-3xl items-center rounded-full border border-white/20 bg-[#15313D]/88 px-6 shadow-lg backdrop-blur-xl text-white">
+      <nav className="relative flex h-14 w-full max-w-3xl items-center rounded-full border border-white/20 bg-[#15313D]/88 px-6 shadow-lg backdrop-blur-xl text-white font-[family-name:var(--font-gelasio)]">
         {/* Logo — left */}
         <Link href="/" className="flex items-center">
           <Image
@@ -39,11 +49,23 @@ export function Header() {
 
         {/* Desktop nav — absolutely centered */}
         <div className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 md:flex">
-          {links.map((link) => (
-            <Link key={link.label} className={cn(buttonVariants({ variant: 'ghost' }), 'text-white hover:text-white hover:bg-white/10')} href={link.href}>
-              {link.label}
-            </Link>
-          ))}
+          {links.map((link) => {
+            const isActive = link.href === pathname;
+            return (
+              <Link
+                key={link.label}
+                className={cn(
+                  buttonVariants({ variant: 'ghost' }),
+                  'text-white hover:text-white hover:bg-white/10',
+                  isActive && 'bg-white/15 font-semibold',
+                )}
+                href={link.href}
+                onClick={(e) => handleNavClick(e, link.scrollTo)}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </div>
 
         {/* Desktop CTA — right */}
@@ -70,7 +92,7 @@ export function Header() {
       {/* Mobile menu */}
       <div
         className={cn(
-          'bg-background/90 fixed top-20 right-4 left-4 z-50 flex flex-col overflow-hidden rounded-2xl border border-white/30 shadow-lg md:hidden',
+          'bg-background/90 fixed top-20 right-4 left-4 z-50 flex flex-col overflow-hidden rounded-2xl border border-white/30 shadow-lg md:hidden font-[family-name:var(--font-gelasio)]',
           open ? 'block' : 'hidden',
         )}
       >
@@ -87,7 +109,7 @@ export function Header() {
                 key={link.label}
                 className={buttonVariants({ variant: 'ghost', className: 'justify-start' })}
                 href={link.href}
-                onClick={() => setOpen(false)}
+                onClick={(e) => { handleNavClick(e, link.scrollTo); setOpen(false); }}
               >
                 {link.label}
               </Link>

@@ -79,10 +79,23 @@ async function init() {
 
     const avatarEl = document.getElementById('settingsAvatar');
     avatarEl.style.background = color;
+    avatarEl.innerHTML = '';
     if (imageUrl) {
-      avatarEl.innerHTML = `<img src="${imageUrl}" alt="Profile" onerror="this.parentElement.innerHTML='<span>${initial}</span>';this.parentElement.style.background='${color}'">`;
+      const img = document.createElement('img');
+      img.alt = 'Profile';
+      img.addEventListener('error', () => {
+        avatarEl.innerHTML = '';
+        const span = document.createElement('span');
+        span.textContent = initial;
+        avatarEl.style.background = color;
+        avatarEl.appendChild(span);
+      });
+      img.src = imageUrl;
+      avatarEl.appendChild(img);
     } else {
-      avatarEl.innerHTML = `<span>${initial}</span>`;
+      const span = document.createElement('span');
+      span.textContent = initial;
+      avatarEl.appendChild(span);
     }
     document.getElementById('settingsEmail').textContent = email || '—';
     document.getElementById('headerEmail').textContent = email || '—';
