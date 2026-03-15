@@ -39,8 +39,21 @@ const xai = process.env.X_API_KEY
   : null;
 
 // Middleware
+const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : [];
+
 app.use(cors({
-  origin: '*', // In production, restrict to extension origin
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g. Chrome extension service workers)
+    if (!origin) return callback(null, true);
+    if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+    // Allow any chrome-extension:// origin in development
+    if (process.env.NODE_ENV !== 'production' && origin.startsWith('chrome-extension://')) {
+      return callback(null, true);
+    }
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));

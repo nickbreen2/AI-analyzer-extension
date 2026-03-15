@@ -38,7 +38,6 @@ export function GlowButton({
 
   return (
     <div className={`relative inline-flex items-center justify-center gap-4 group ${className ?? ""}`}>
-      <div className="absolute inset-0 duration-1000 opacity-60 transition-all bg-gradient-to-r from-indigo-500 via-pink-500 to-yellow-400 rounded-full blur-lg filter group-hover:opacity-100 group-hover:duration-200" />
       <a
         role="button"
         className="group relative inline-flex items-center justify-center rounded-full bg-white font-semibold text-gray-900 transition-all duration-200 hover:bg-gray-50 hover:shadow-lg hover:-translate-y-0.5 hover:shadow-gray-400/30 px-6 py-2 text-sm"

@@ -48,7 +48,7 @@ export function HeroWithMockup({
           <h1
             className={cn(
               "block animate-appear",
-              "bg-gradient-to-b from-foreground via-foreground/90 to-foreground/50",
+              "bg-gradient-to-b from-white via-white/90 to-white/60",
               "bg-clip-text text-transparent",
               "text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl",
               "leading-[1.15] sm:leading-[1.15]",
@@ -68,7 +68,7 @@ export function HeroWithMockup({
             className={cn(
               "max-w-[550px] animate-appear [animation-delay:150ms]",
               "text-sm sm:text-base md:text-lg",
-              "text-foreground/60",
+              "text-white/60",
               "font-medium",
             )}
           >
