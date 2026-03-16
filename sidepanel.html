@@ -3,14 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spirit.AI</title>
+  <title>Browsersky AI</title>
   <link rel="stylesheet" href="sidepanel.css">
 </head>
 <body>
   <div class="container">
     <header class="header">
-      <img src="icons/Brand Logo.svg" alt="Spirit.AI" class="logo">
-      <h1>Spirit.AI</h1>
+      <div class="page-indicator loading" id="pageIndicator">
+        <img class="page-indicator-favicon" id="pageIndicatorFavicon" src="" alt="" width="14" height="14">
+        <span class="page-indicator-title" id="pageIndicatorTitle"></span>
+      </div>
+      <div class="header-actions">
+        <button id="clearChatButton" class="header-icon-btn" title="New chat">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"></path>
+            <line x1="12" y1="7" x2="12" y2="13"></line>
+            <line x1="9" y1="10" x2="15" y2="10"></line>
+          </svg>
+        </button>
+        <button id="profileBtn" class="header-icon-btn" title="Account" style="padding:0;border-radius:50%;">
+          <div class="profile-avatar-sm" id="headerAvatar">
+            <span id="headerAvatarInitials"></span>
+          </div>
+        </button>
+      </div>
     </header>
     
     <div class="error-banner" id="errorBanner" style="display: none;">
@@ -20,30 +36,48 @@
     
     <div class="messages-container" id="messagesContainer">
       <div class="welcome-message">
-        <p>Ask me anything about the current page!</p>
-      </div>
-    </div>
-    
-    <div class="loading-indicator" id="loadingIndicator" style="display: none;">
-      <div class="loading-spinner"></div>
-      <span class="loading-text">Spirit.AI is thinking...</span>
-      <div class="loading-progress" id="loadingProgress" style="display: none;">
-        Taking longer than expected...
+        <img src="icons/Browsersky-full-logo.svg" alt="Browsersky" class="welcome-logo">
+        <p>Ask Browsersky anything about this page</p>
+        <div class="suggestion-chips" id="suggestionChips"></div>
       </div>
     </div>
     
     <div class="input-container">
-      <textarea 
-        id="messageInput" 
-        placeholder="Ask a question about this page..."
-        rows="1"
-      ></textarea>
-      <button id="sendButton" class="send-button" disabled>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="22" y1="2" x2="11" y2="13"></line>
-          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-        </svg>
-      </button>
+      <div class="input-pill">
+        <textarea
+          id="messageInput"
+          placeholder="Ask anything..."
+          rows="1"
+        ></textarea>
+        <div class="input-toolbar">
+          <div class="input-toolbar-left">
+          <div class="model-selector" id="modelSelector">
+            <button class="model-selector-btn" id="modelSelectorBtn">
+              <img id="modelLogo" src="icons/minimax-color.svg" alt="" class="model-logo">
+              <span id="modelLabel">MiniMax</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+          </div>
+          <button class="analyze-page-btn" id="analyzePageBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <circle cx="11" cy="14" r="2.5"></circle>
+              <line x1="13.5" y1="16.5" x2="16" y2="19"></line>
+            </svg>
+            <span>Analyze page</span>
+          </button>
+          </div>
+          <button id="sendButton" class="send-button" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="19" x2="12" y2="5"></line>
+              <polyline points="5 12 12 5 19 12"></polyline>
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
   

@@ -1,28 +1,39 @@
 {
   "manifest_version": 3,
-  "name": "Spirit.AI",
+  "name": "Browsersky AI",
   "version": "1.0.0",
   "description": "A browser-based AI assistant that analyzes web pages and answers questions using page context",
   "permissions": [
     "sidePanel",
     "activeTab",
     "tabs",
-    "scripting"
+    "scripting",
+    "storage",
+    "tabGroups"
   ],
   "host_permissions": [
     "<all_urls>"
   ],
   "action": {
-    "default_title": "Spirit.AI",
+    "default_title": "Browsersky AI",
     "default_icon": {
-      "16": "icons/icon16.png",
-      "32": "icons/icon32.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
+      "16": "icons/(1)Browsersky-chrome-logo.png",
+      "32": "icons/(1)Browsersky-chrome-logo.png",
+      "48": "icons/(1)Browsersky-chrome-logo.png",
+      "128": "icons/(1)Browsersky-chrome-logo.png"
     }
   },
   "side_panel": {
     "default_path": "sidepanel.html"
+  },
+  "commands": {
+    "open-sidepanel": {
+      "suggested_key": {
+        "default": "Ctrl+B",
+        "mac": "Command+B"
+      },
+      "description": "Open Browsersky AI side panel"
+    }
   },
   "background": {
     "service_worker": "service_worker.js"
@@ -34,11 +45,14 @@
       "run_at": "document_idle"
     }
   ],
+  "externally_connectable": {
+    "matches": ["http://localhost:3000/*"]
+  },
   "icons": {
-    "16": "icons/icon16.png",
-    "32": "icons/icon32.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
+    "16": "icons/(1)Browsersky-chrome-logo.png",
+    "32": "icons/(1)Browsersky-chrome-logo.png",
+    "48": "icons/(1)Browsersky-chrome-logo.png",
+    "128": "icons/(1)Browsersky-chrome-logo.png"
   }
 }
 
