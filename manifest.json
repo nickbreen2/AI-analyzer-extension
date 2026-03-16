@@ -46,7 +46,7 @@
     }
   ],
   "externally_connectable": {
-    "matches": ["http://localhost:3000/*"]
+    "matches": ["https://browsersky-ai.vercel.app/*"]
   },
   "icons": {
     "16": "icons/Logo (1).png",

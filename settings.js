@@ -183,12 +183,12 @@ async function init() {
     if (e.target === e.currentTarget) document.getElementById('deleteModalBackdrop').style.display = 'none';
   });
   document.getElementById('deleteModalConfirm').addEventListener('click', () => {
-    chrome.tabs.create({ url: `http://localhost:3000/settings/delete-account?extId=${chrome.runtime.id}` });
+    chrome.tabs.create({ url: `https://browsersky-ai.vercel.app/settings?extId=${chrome.runtime.id}` });
     document.getElementById('deleteModalBackdrop').style.display = 'none';
   });
 
   // Upgrade buttons
-  const openUpgrade = () => chrome.tabs.create({ url: `http://localhost:3000/upgrade?extId=${chrome.runtime.id}` });
+  const openUpgrade = () => chrome.tabs.create({ url: `https://browsersky-ai.vercel.app/pricing?extId=${chrome.runtime.id}` });
   document.getElementById('upgradeProBtn').addEventListener('click', openUpgrade);
   document.getElementById('usageUpgradeBtn').addEventListener('click', openUpgrade);
 }
