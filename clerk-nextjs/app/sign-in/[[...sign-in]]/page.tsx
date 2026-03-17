@@ -61,7 +61,7 @@ export default function SignInPage() {
               card: {
                 background: '#111d2b',
                 border: '1px solid rgba(255,255,255,0.16)',
-                boxShadow: '0 0 0 1px rgba(59,130,246,0.12), 0 4px 40px rgba(0,0,0,0.5)',
+                boxShadow: '0 4px 40px rgba(0,0,0,0.5)',
                 padding: '32px',
                 width: '100%',
                 maxWidth: '400px',

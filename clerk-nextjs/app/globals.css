@@ -128,10 +128,23 @@ body {
   opacity: 1 !important;
 }
 
-/* ── Responsive: Tablet (iPad ≤ 768px) ───── */
+/* Footer action link ("Sign up" / "Sign in") — blue */
+.cl-footerActionLink {
+  color: #60a5fa !important;
+}
+
+/* ── Responsive base — constrain Clerk's outer wrappers ── */
+.cl-rootBox,
+.cl-cardBox {
+  width: 100% !important;
+  max-width: 400px !important;
+}
+
+/* ── Responsive: Tablet (iPad 481px–768px) ── */
 @media (max-width: 768px) {
-  .cl-rootBox {
-    width: 100% !important;
+  .cl-rootBox,
+  .cl-cardBox {
+    max-width: 100% !important;
   }
   .cl-card {
     width: 100% !important;
@@ -146,7 +159,13 @@ body {
 
 /* ── Responsive: Mobile (≤ 480px) ────────── */
 @media (max-width: 480px) {
+  .cl-rootBox,
+  .cl-cardBox {
+    max-width: calc(100vw - 32px) !important;
+  }
   .cl-card {
+    width: 100% !important;
+    max-width: 100% !important;
     padding: 20px 16px !important;
     border-radius: 14px !important;
   }
