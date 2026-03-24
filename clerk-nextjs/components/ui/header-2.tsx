@@ -71,7 +71,7 @@ export function Header() {
         {/* Desktop CTA — right */}
         <div className="ml-auto hidden md:block">
           <GlowButton
-            href="https://chromewebstore.google.com"
+            href="https://chromewebstore.google.com/detail/browsersky-ai/bgdicffbhcmckenhplfjonafaafjaeok"
             label="Get Extension"
             target="_blank"
             rel="noopener noreferrer"
@@ -117,7 +117,7 @@ export function Header() {
           </div>
           <div className="flex flex-col gap-2">
             <GlowButton
-              href="https://chromewebstore.google.com"
+              href="https://chromewebstore.google.com/detail/browsersky-ai/bgdicffbhcmckenhplfjonafaafjaeok"
               label="Get Extension"
               target="_blank"
               rel="noopener noreferrer"

@@ -18,7 +18,7 @@ export default function Home() {
             description="BrowserSky AI brings intelligent AI conversations to every tab. Ask questions, summarize pages, and get instant answers — without leaving your browser."
             primaryCta={{
               text: "Get Extension",
-              href: "https://chromewebstore.google.com",
+              href: "https://chromewebstore.google.com/detail/browsersky-ai/bgdicffbhcmckenhplfjonafaafjaeok",
             }}
             mockupVideo={{
               src: "/icons/Browsersky-(demo)-(1).mp4",

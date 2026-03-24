@@ -5,9 +5,9 @@ const conversations = {};
 
 // Configuration
 const CONFIG = {
-  backendEndpoint: 'http://localhost:3001/api/chat',
-  visionEndpoint: 'http://localhost:3001/api/chat/vision',
-  classifyEndpoint: 'http://localhost:3001/api/classify',
+  backendEndpoint: 'https://browsersky-ai.onrender.com/api/chat',
+  visionEndpoint: 'https://browsersky-ai.onrender.com/api/chat/vision',
+  classifyEndpoint: 'https://browsersky-ai.onrender.com/api/classify',
   defaultModel: 'MiniMax-Text-01',
   visionModel: 'gpt-4o',
   fallbackModel: 'gpt-4o-mini',
