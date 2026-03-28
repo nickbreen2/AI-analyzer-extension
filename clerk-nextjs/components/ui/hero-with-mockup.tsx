@@ -4,7 +4,6 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { GlowButton } from "@/components/ui/glow-button";
 import { Mockup } from "@/components/ui/mockup";
-import { Glow } from "@/components/ui/glow";
 
 interface HeroWithMockupProps {
   title: string;
@@ -45,7 +44,7 @@ export function HeroWithMockup({
           <h1
             className={cn(
               "block animate-appear",
-              "bg-gradient-to-b from-white via-white/90 to-white/60",
+              "bg-gradient-to-b from-gray-900 via-gray-800 to-gray-700",
               "bg-clip-text text-transparent",
               "text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl",
               "leading-[1.15] sm:leading-[1.15]",
@@ -65,7 +64,7 @@ export function HeroWithMockup({
             className={cn(
               "max-w-[550px] animate-appear [animation-delay:150ms]",
               "text-sm sm:text-base md:text-lg",
-              "text-white/60",
+              "text-gray-500",
               "font-medium",
             )}
           >
@@ -110,13 +109,6 @@ export function HeroWithMockup({
         </div>
       </div>
 
-      {/* Background Glow */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <Glow
-          variant="above"
-          className="animate-appear-zoom [animation-delay:1000ms]"
-        />
-      </div>
     </section>
   );
 }

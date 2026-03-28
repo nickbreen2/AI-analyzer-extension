@@ -3,7 +3,6 @@
 import { useAuth, useUser } from '@clerk/nextjs'
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { InfiniteGridBg } from '@/components/ui/infinite-grid-bg'
 import { Header } from '@/components/ui/header-2'
 import { Footer } from '@/components/ui/footer'
 
@@ -78,15 +77,13 @@ function AuthBridge() {
       style={{
         minHeight: '100vh',
         fontFamily: 'var(--font-gelasio), serif',
-        backgroundColor: '#0f1f27',
+        backgroundColor: '#ffffff',
         display: 'flex',
         flexDirection: 'column',
-        color: 'white',
+        color: '#111827',
       }}
     >
       <div style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <InfiniteGridBg />
-
         <Header />
 
       {/* Page content */}
@@ -107,14 +104,14 @@ function AuthBridge() {
               style={{
                 display: 'inline-block',
                 alignSelf: 'flex-start',
-                backgroundColor: 'rgba(99,102,241,0.15)',
-                color: '#a5b4fc',
+                backgroundColor: 'rgba(99,102,241,0.1)',
+                color: '#4f46e5',
                 fontSize: 13,
                 fontWeight: 600,
                 padding: '5px 14px',
                 borderRadius: 999,
                 marginBottom: 14,
-                border: '1px solid rgba(99,102,241,0.3)',
+                border: '1px solid rgba(99,102,241,0.2)',
               }}
             >
               BrowserSky Chrome Extension
@@ -125,7 +122,7 @@ function AuthBridge() {
                 fontFamily: 'var(--font-gelasio), serif',
                 fontSize: 'clamp(28px, 5vw, 44px)',
                 fontWeight: 800,
-                color: '#ffffff',
+                color: '#111827',
                 lineHeight: 1.1,
                 margin: '0 0 20px 0',
                 maxWidth: 560,
@@ -146,10 +143,10 @@ function AuthBridge() {
               }}
             />
 
-            <p style={{ fontSize: 18, fontWeight: 700, color: '#ffffff', margin: '0 0 4px 0' }}>
+            <p style={{ fontSize: 18, fontWeight: 700, color: '#111827', margin: '0 0 4px 0' }}>
               Chat with any page
             </p>
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', margin: 0, lineHeight: 1.6 }}>
+            <p style={{ fontSize: 14, color: '#6b7280', margin: 0, lineHeight: 1.6 }}>
               Press Command + B (Mac) or Ctrl + M (Windows) to summon BrowserSky on any website.
             </p>
           </div>
@@ -168,15 +165,15 @@ function AuthBridge() {
           >
             {/* Step 1 */}
             <div>
-              <p style={{ fontSize: 13, fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0' }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: '#111827', margin: '0 0 8px 0' }}>
                 Step 1: Press the Command Key
               </p>
               <div
                 style={{
                   borderRadius: 14,
                   overflow: 'hidden',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  boxShadow: '0 2px 20px rgba(0,0,0,0.3)',
+                  border: '1px solid #e5e7eb',
+                  boxShadow: '0 2px 20px rgba(0,0,0,0.07)',
                 }}
               >
                 <img
@@ -189,15 +186,15 @@ function AuthBridge() {
 
             {/* Step 2 */}
             <div>
-              <p style={{ fontSize: 13, fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0' }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: '#111827', margin: '0 0 8px 0' }}>
                 Step 2: Pin BrowserSky AI
               </p>
               <div
                 style={{
                   borderRadius: 14,
                   overflow: 'hidden',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  boxShadow: '0 2px 20px rgba(0,0,0,0.3)',
+                  border: '1px solid #e5e7eb',
+                  boxShadow: '0 2px 20px rgba(0,0,0,0.07)',
                 }}
               >
                 <img
@@ -208,13 +205,13 @@ function AuthBridge() {
               </div>
             </div>
 
-            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', margin: 0 }}>
+            <p style={{ fontSize: 13, color: '#9ca3af', margin: 0 }}>
               Need assistance?{' '}
               <a
                 href="https://browsersky.dev/support"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: '#818cf8', fontWeight: 600, textDecoration: 'none' }}
+                style={{ color: '#6366f1', fontWeight: 600, textDecoration: 'none' }}
               >
                 Feel free to reach out!
               </a>
@@ -240,14 +237,14 @@ function AuthBridge() {
               style={{
                 width: 24,
                 height: 24,
-                border: '3px solid rgba(255,255,255,0.2)',
-                borderTopColor: '#ffffff',
+                border: '3px solid #e5e7eb',
+                borderTopColor: '#111827',
                 borderRadius: '50%',
                 animation: 'spin 0.8s linear infinite',
               }}
             />
           )}
-          <p style={{ color: isError ? '#f87171' : 'rgba(255,255,255,0.7)', fontSize: 16 }}>{status}</p>
+          <p style={{ color: isError ? '#ef4444' : '#4b5563', fontSize: 16 }}>{status}</p>
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
       )}
@@ -267,8 +264,8 @@ export default function AuthBridgePage() {
             alignItems: 'center',
             justifyContent: 'center',
             height: '100vh',
-            backgroundColor: '#0f1f27',
-            color: 'rgba(255,255,255,0.6)',
+            backgroundColor: '#ffffff',
+            color: '#6b7280',
             fontFamily: 'var(--font-gelasio), serif',
           }}
         >
