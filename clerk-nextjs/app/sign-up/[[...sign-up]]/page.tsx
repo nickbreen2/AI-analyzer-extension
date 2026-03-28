@@ -1,6 +1,5 @@
 import { SignUp } from '@clerk/nextjs'
 import { Footer } from '@/components/ui/footer'
-import { InfiniteGridBg } from '@/components/ui/infinite-grid-bg'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -9,14 +8,12 @@ export default function SignUpPage() {
     <div
       style={{
         minHeight: '100vh',
-        backgroundColor: '#0a1520',
+        backgroundColor: '#ffffff',
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
       }}
     >
-      <InfiniteGridBg />
-
       {/* Center content */}
       <div style={{
         flex: 1,
@@ -32,7 +29,7 @@ export default function SignUpPage() {
         {/* Logo */}
         <Link href="/">
           <Image
-            src="/icons/BrowserSky-white-mode.svg"
+            src="/icons/Browsersky-1.svg"
             alt="BrowserSky"
             width={140}
             height={24}
@@ -44,12 +41,13 @@ export default function SignUpPage() {
           appearance={{
             variables: {
               colorPrimary: '#3b82f6',
-              colorBackground: '#192431',
-              colorInputBackground: '#0f1a26',
-              colorInputText: '#f1f5f9',
-              colorText: '#f1f5f9',
-              colorTextSecondary: 'rgba(241,245,249,0.75)',
-              colorNeutral: '#f1f5f9',
+              colorBackground: '#ffffff',
+              colorInputBackground: '#f9fafb',
+              colorInputText: '#111827',
+              colorText: '#111827',
+              colorTextSecondary: '#6b7280',
+              colorNeutral: '#111827',
+              colorBackgroundSecondary: '#f9fafb',
               borderRadius: '14px',
               fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',
               fontSize: '15px',
@@ -59,9 +57,9 @@ export default function SignUpPage() {
                 display: 'none',
               },
               cardBox: {
-                background: '#192431',
-                border: '1px solid rgba(255,255,255,0.16)',
-                boxShadow: '0 4px 40px rgba(0,0,0,0.5)',
+                background: '#ffffff',
+                border: '1px solid #e5e7eb',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
                 borderRadius: '14px',
                 width: '100%',
                 maxWidth: '400px',
@@ -75,44 +73,44 @@ export default function SignUpPage() {
                 width: '100%',
               },
               headerTitle: {
-                color: '#f1f5f9',
+                color: '#111827',
                 fontSize: '20px',
                 fontWeight: '600',
                 letterSpacing: '-0.01em',
               },
               headerSubtitle: {
-                color: 'rgba(241,245,249,0.45)',
+                color: '#9ca3af',
                 fontSize: '14px',
               },
               socialButtonsBlockButton: {
-                border: '1px solid rgba(255,255,255,0.12)',
-                backgroundColor: '#1a2b3c',
-                color: '#f1f5f9',
+                border: '1px solid #e5e7eb',
+                backgroundColor: '#f9fafb',
+                color: '#111827',
                 borderRadius: '10px',
                 height: '44px',
                 transition: 'background 0.15s',
               },
               socialButtonsBlockButtonText: {
-                color: '#f1f5f9',
+                color: '#111827',
                 fontWeight: '500',
               },
               dividerLine: {
-                backgroundColor: 'rgba(255,255,255,0.08)',
+                backgroundColor: '#e5e7eb',
               },
               dividerText: {
-                color: 'rgba(241,245,249,0.5)',
+                color: '#9ca3af',
                 fontSize: '13px',
               },
               formFieldLabel: {
-                color: 'rgba(241,245,249,0.6)',
+                color: '#6b7280',
                 fontSize: '13px',
                 fontWeight: '500',
               },
               formFieldInput: {
-                backgroundColor: '#0f1a26',
-                border: '1px solid transparent',
+                backgroundColor: '#f9fafb',
+                border: '1px solid #e5e7eb',
                 borderRadius: '10px',
-                color: '#f1f5f9',
+                color: '#111827',
                 height: '44px',
               },
               formButtonPrimary: {
@@ -123,19 +121,26 @@ export default function SignUpPage() {
                 fontWeight: '500',
               },
               footerActionLink: {
-                color: '#60a5fa',
+                color: '#3b82f6',
               },
               footerActionText: {
-                color: 'rgba(241,245,249,0.75)',
+                color: '#6b7280',
               },
               footerAction: {
                 paddingTop: '8px',
               },
               identityPreviewText: {
-                color: '#f1f5f9',
+                color: '#111827',
               },
               identityPreviewEditButton: {
-                color: '#60a5fa',
+                color: '#3b82f6',
+              },
+              footer: {
+                background: '#f9fafb',
+                borderTop: '1px solid #e5e7eb',
+              },
+              footerPages: {
+                background: '#f9fafb',
               },
             },
           }}

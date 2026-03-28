@@ -60,10 +60,10 @@ export function FAQSection() {
               aria-hidden="true"
             />
           </motion.div>
-          <h2 className="mb-4 text-3xl font-bold sm:text-4xl md:text-5xl text-white">
+          <h2 className="mb-4 text-3xl font-bold sm:text-4xl md:text-5xl text-gray-900">
             Frequently Asked Questions
           </h2>
-          <p className="text-sm text-white/60 sm:text-base md:text-lg">
+          <p className="text-sm text-gray-500 sm:text-base md:text-lg">
             Everything you need to know about BrowserSky AI
           </p>
         </motion.div>
@@ -81,7 +81,7 @@ export function FAQSection() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="overflow-hidden bg-white/5 border-white/10 shadow-sm">
+                <Card className="overflow-hidden bg-gray-50 border-gray-200 shadow-sm">
                   <CardHeader>
                     <motion.button
                       type="button"
@@ -94,7 +94,7 @@ export function FAQSection() {
                       aria-controls={answerId}
                       id={questionId}
                     >
-                      <span className="text-base font-semibold text-white">
+                      <span className="text-base font-semibold text-gray-900">
                         {faq.question}
                       </span>
                       <motion.div
@@ -102,7 +102,7 @@ export function FAQSection() {
                         transition={{ duration: 0.3 }}
                         aria-hidden="true"
                       >
-                        <ChevronDown className="h-5 w-5 text-white/50" />
+                        <ChevronDown className="h-5 w-5 text-gray-400" />
                       </motion.div>
                     </motion.button>
                   </CardHeader>
@@ -119,7 +119,7 @@ export function FAQSection() {
                         aria-labelledby={questionId}
                       >
                         <CardContent className="pt-0">
-                          <p className="text-sm leading-relaxed text-white/60">
+                          <p className="text-sm leading-relaxed text-gray-500">
                             {faq.answer}
                           </p>
                         </CardContent>

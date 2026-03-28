@@ -2,7 +2,6 @@
 
 import { Header } from "@/components/ui/header-2";
 import { Footer } from "@/components/ui/footer";
-import { InfiniteGridBg } from "@/components/ui/infinite-grid-bg";
 
 const SUPPORT_EMAIL = "support@browsersky.dev";
 
@@ -61,18 +60,17 @@ export default function PrivacyPage() {
   return (
     <div
       className="relative min-h-screen flex flex-col font-[family-name:var(--font-gelasio)]"
-      style={{ background: "#0f1f27" }}
+      style={{ background: "#ffffff" }}
     >
       <div className="relative flex-1">
-        <InfiniteGridBg />
         <Header />
         <main className="px-6 pt-36 pb-24">
           <div className="max-w-3xl mx-auto">
             {/* Title */}
-            <h1 className="text-3xl md:text-4xl font-semibold text-white mb-2">
+            <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-2">
               Privacy Policy
             </h1>
-            <p className="text-white/30 text-sm mb-12">
+            <p className="text-gray-400 text-sm mb-12">
               Last updated: March 15, 2026
             </p>
 
@@ -80,7 +78,7 @@ export default function PrivacyPage() {
             <div className="flex flex-col gap-10">
               {sections.map((section) => (
                 <div key={section.title}>
-                  <h2 className="text-base font-semibold text-white mb-3">
+                  <h2 className="text-base font-semibold text-gray-900 mb-3">
                     {section.title}
                   </h2>
                   {section.content.split("\n").map((line, i) =>
@@ -89,7 +87,7 @@ export default function PrivacyPage() {
                     ) : (
                       <p
                         key={i}
-                        className="text-white/55 text-sm leading-relaxed"
+                        className="text-gray-600 text-sm leading-relaxed"
                       >
                         {line}
                       </p>
@@ -98,7 +96,7 @@ export default function PrivacyPage() {
                   {section.title.startsWith("12.") && (
                     <a
                       href={`mailto:${SUPPORT_EMAIL}`}
-                      className="inline-block mt-2 text-sm text-white/70 hover:text-white underline underline-offset-2 transition-colors"
+                      className="inline-block mt-2 text-sm text-gray-600 hover:text-gray-900 underline underline-offset-2 transition-colors"
                     >
                       {SUPPORT_EMAIL}
                     </a>
